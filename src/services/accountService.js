@@ -1,20 +1,8 @@
-// 1️⃣ Create account
-
-// Responsibilities:
-// Accept input (name, type, description, optional balance)
-// Validate:
-// name exists
-// type is valid (from constants)
-// Create account with default balance = 0 (or given)
-// Return created account
-
-// ❌ No HTTP handling
-// ❌ No req / res
-
 import Account from "../models/Account.js";
 import { ACCOUNT_TYPES } from "../utils/constants.js";
 
 const createAccount = async (accountData) => {
+  // 1. destructure values
   const {
     accountName,
     accountType,
@@ -47,4 +35,9 @@ const createAccount = async (accountData) => {
   return account;
 };
 
-export { createAccount };
+const getAllAccounts = async () => {
+  const accounts = await Account.find({}).sort({ createdAt: 1 });
+  return accounts;
+};
+
+export { createAccount, getAllAccounts };
