@@ -3,6 +3,7 @@ import {
   updateTransaction,
   getAllTransactions,
   filterTransactions,
+  getCategorySummary,
 } from "../services/transactionService.js";
 
 const createTransactionController = async (req, res) => {
@@ -52,9 +53,19 @@ const filterTransactionsController = async (req, res) => {
   }
 };
 
+const getCategorySummaryController = async (req, res) => {
+  try {
+    const summary = await getCategorySummary();
+    return res.status(200).json({ data: summary });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 export {
   createTransactionController,
   updateTransactionController,
   getAllTransactionsController,
   filterTransactionsController,
+  getCategorySummaryController,
 };

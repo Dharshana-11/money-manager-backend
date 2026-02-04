@@ -209,9 +209,24 @@ const filterTransactions = async (filters) => {
   return transactions;
 };
 
+const getCategorySummary = async () => {
+  const summary = await Transaction.aggregate([
+    {
+      $group: {
+        _id: "$category",
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+    { $sort: { totalAmount: -1 } },
+  ]);
+
+  return summary;
+};
+
 export {
   createTransaction,
   updateTransaction,
   getAllTransactions,
   filterTransactions,
+  getCategorySummary,
 };
