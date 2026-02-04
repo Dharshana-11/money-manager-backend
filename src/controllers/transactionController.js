@@ -1,6 +1,7 @@
 import {
   createTransaction,
   updateTransaction,
+  getAllTransactions,
 } from "../services/transactionService.js";
 
 const createTransactionController = async (req, res) => {
@@ -32,4 +33,17 @@ const updateTransactionController = async (req, res) => {
   }
 };
 
-export { createTransactionController, updateTransactionController };
+const getAllTransactionsController = async (req, res) => {
+  try {
+    const transactions = await getAllTransactions();
+    return res.status(200).json({ data: transactions });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export {
+  createTransactionController,
+  updateTransactionController,
+  getAllTransactionsController,
+};
