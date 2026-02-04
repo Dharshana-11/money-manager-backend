@@ -22,5 +22,6 @@ export const CATEGORIES = [
   "loan",
   "travel",
   "shopping",
+  "salary",
   "others",
 ];
