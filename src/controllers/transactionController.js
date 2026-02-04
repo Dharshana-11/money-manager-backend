@@ -4,6 +4,7 @@ import {
   getAllTransactions,
   filterTransactions,
   getCategorySummary,
+  getDashboardStats,
 } from "../services/transactionService.js";
 
 const createTransactionController = async (req, res) => {
@@ -62,10 +63,21 @@ const getCategorySummaryController = async (req, res) => {
   }
 };
 
+const getDashboardStatsController = async (req, res) => {
+  try {
+    const { range } = req.params;
+    const stats = await getDashboardStats(range);
+    return res.status(200).json({ data: stats });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 export {
   createTransactionController,
   updateTransactionController,
   getAllTransactionsController,
   filterTransactionsController,
   getCategorySummaryController,
+  getDashboardStatsController,
 };

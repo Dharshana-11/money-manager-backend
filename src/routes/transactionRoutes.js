@@ -5,6 +5,7 @@ import {
   getAllTransactionsController,
   filterTransactionsController,
   getCategorySummaryController,
+  getDashboardStatsController,
 } from "../controllers/transactionController.js";
 
 const router = express.Router();
@@ -14,5 +15,6 @@ router.put("/:id", updateTransactionController);
 router.get("/", getAllTransactionsController);
 router.get("/filter", filterTransactionsController);
 router.get("/summary/category", getCategorySummaryController);
+router.get("/dashboard/:range", getDashboardStatsController);
 
 export default router;

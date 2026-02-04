@@ -223,10 +223,39 @@ const getCategorySummary = async () => {
   return summary;
 };
 
+const getDashboardStats = async (range) => {
+  let startDate = new Date();
+
+  if (range === "weekly") {
+    startDate.setDate(startDate.getDate() - 7);
+  } else if (range === "monthly") {
+    startDate.setMonth(startDate.getMonth() - 1);
+  } else if (range === "yearly") {
+    startDate.setFullYear(startDate.getFullYear() - 1);
+  }
+
+  const stats = await Transaction.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: startDate },
+      },
+    },
+    {
+      $group: {
+        _id: "$type",
+        totalAmount: { $sum: "$amount" },
+      },
+    },
+  ]);
+
+  return stats;
+};
+
 export {
   createTransaction,
   updateTransaction,
   getAllTransactions,
   filterTransactions,
   getCategorySummary,
+  getDashboardStats,
 };
