@@ -179,4 +179,13 @@ const updateTransaction = async (transactionId, updatedData) => {
   return transaction;
 };
 
-export { createTransaction, updateTransaction };
+const getAllTransactions = async () => {
+  const transactions = await Transaction.find({})
+    .populate("account", "name type") // Update accountId to actual acc. obj.
+    .populate("toAccount", "name type")
+    .sort({ createdAt: -1 });
+
+  return transactions;
+};
+
+export { createTransaction, updateTransaction, getAllTransactions };
