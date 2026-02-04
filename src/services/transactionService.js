@@ -97,4 +97,86 @@ const createTransaction = async (transactionData) => {
   return transaction;
 };
 
-export { createTransaction };
+const updateTransaction = async (transactionId, updatedData) => {
+  //Fetch transaction
+  const transaction = await Transaction.findById(transactionId);
+
+  if (!transaction) {
+    throw new Error("Transaction not found");
+  }
+
+  // 12 hour rule
+  const now = new Date();
+  const diffInMilliSeconds = now - transaction.createdAt;
+  const diffInHours = diffInMilliSeconds / (1000 * 60 * 60); //Convert ms to hours
+
+  if (diffInHours > 12) {
+    throw new Error("Transaction can only be edited within 12 hours");
+  }
+
+  // Fetch source account
+  const account = await Account.findById(transaction.account);
+  if (!account) {
+    throw new Error("Source account not found");
+  }
+
+  //Fetch destination account if applicable
+  let toAccount;
+  if (transaction.type === "transfer") {
+    toAccount = await Account.findById(transaction.toAccount);
+    if (!toAccount) {
+      throw new Error("Destination account not found");
+    }
+  }
+
+  // Revert old transactions
+  if (transaction.type === "income") {
+    account.balance -= transaction.amount;
+  } else if (transaction.type === "expense") {
+    account.balance += transaction.amount;
+  } else if (transaction.type === "transfer") {
+    account.balance += transaction.amount;
+    toAccount.balance -= transaction.amount;
+  }
+
+  // Changes for new amount
+  const newAmount =
+    updatedData.amount != undefined ? updatedData.amount : transaction.amount;
+
+  if (newAmount <= 0) {
+    throw new Error("Amount must be greater than 0");
+  }
+
+  // Apply changes for transaction amount
+  if (transaction.type === "income") {
+    account.balance += newAmount;
+  } else if (transaction.type === "expense") {
+    if (account.balance < newAmount) {
+      throw new Error("Insufficient balance in edit");
+    }
+    account.balance -= newAmount;
+  } else if (transaction.type === "transfer") {
+    if (account.balance < newAmount) {
+      throw new Error("Insufficent balance after edit");
+    }
+    account.balance -= newAmount;
+    toAccount.balance += newAmount;
+
+    await toAccount.save();
+  }
+
+  await account.save();
+
+  // Update transaction fields
+  transaction.amount = newAmount;
+  if (updatedData.category) transaction.category = updatedData.category;
+  if (updatedData.division) transaction.division = updatedData.division;
+  if (updatedData.description)
+    transaction.description = updatedData.description;
+
+  await transaction.save();
+
+  return transaction;
+};
+
+export { createTransaction, updateTransaction };
