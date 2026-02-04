@@ -2,6 +2,7 @@ import {
   createTransaction,
   updateTransaction,
   getAllTransactions,
+  filterTransactions,
 } from "../services/transactionService.js";
 
 const createTransactionController = async (req, res) => {
@@ -42,8 +43,18 @@ const getAllTransactionsController = async (req, res) => {
   }
 };
 
+const filterTransactionsController = async (req, res) => {
+  try {
+    const transactions = await filterTransactions(req.query);
+    return res.status(200).json({ data: transactions });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
 export {
   createTransactionController,
   updateTransactionController,
   getAllTransactionsController,
+  filterTransactionsController,
 };

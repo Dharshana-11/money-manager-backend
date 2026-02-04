@@ -188,4 +188,30 @@ const getAllTransactions = async () => {
   return transactions;
 };
 
-export { createTransaction, updateTransaction, getAllTransactions };
+const filterTransactions = async (filters) => {
+  const { startDate, endDate, category, division, type } = filters;
+
+  const query = {};
+
+  if (category) query.category = category;
+  if (division) query.division = division;
+  if (type) query.type = type;
+
+  if (startDate && endDate) {
+    query.createdAt = {
+      $gte: new Date(startDate),
+      $lte: new Date(endDate),
+    };
+  }
+
+  const transactions = await Transaction.find(query).sort({ createdAt: -1 });
+
+  return transactions;
+};
+
+export {
+  createTransaction,
+  updateTransaction,
+  getAllTransactions,
+  filterTransactions,
+};
